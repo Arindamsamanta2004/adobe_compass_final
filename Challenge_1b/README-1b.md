@@ -287,18 +287,58 @@ with open('../output/collection1_output.json') as f:
 
 ## 🐳 Docker Deployment
 
-### Individual Services
+### Prerequisites
 ```bash
-# Build individual containers
-docker build -f docker/Dockerfile.document-processor -t doc-processor .
-docker build -f docker/Dockerfile.semantic-ranking -t semantic-ranking .
-docker build -f docker/Dockerfile.query-formulation -t query-formulation .
-docker build -f docker/Dockerfile.json-formatter -t json-formatter .
+# Ensure Docker is installed and running
+docker --version
+docker-compose --version
+
+# Navigate to implementation directory
+cd Challenge_1b/persona-pdf-analysis
 ```
 
-### Full System
+### Option 1: Main Application Container
 ```bash
-# Launch complete system
+# Build the main Challenge 1b container
+docker build --platform linux/amd64 -t challenge1b-persona-analysis .
+
+# Run with Collection 1 (Travel Planning)
+docker run --rm \
+  -v $(pwd)/../Collection\ 1:/app/input:ro \
+  -v $(pwd)/../output:/app/output \
+  --platform linux/amd64 \
+  challenge1b-persona-analysis \
+  /app/input/challenge1b_input.json /app/input/PDFs -o /app/output/docker_collection1.json
+
+# Run with Collection 2 (HR Professional)
+docker run --rm \
+  -v $(pwd)/../Collection\ 2:/app/input:ro \
+  -v $(pwd)/../output:/app/output \
+  --platform linux/amd64 \
+  challenge1b-persona-analysis \
+  /app/input/challenge1b_input.json /app/input/PDFs -o /app/output/docker_collection2.json
+
+# Run with Collection 3 (Food Contractor)
+docker run --rm \
+  -v $(pwd)/../Collection\ 3:/app/input:ro \
+  -v $(pwd)/../output:/app/output \
+  --platform linux/amd64 \
+  challenge1b-persona-analysis \
+  /app/input/challenge1b_input.json /app/input/PDFs -o /app/output/docker_collection3.json
+```
+
+### Option 2: Individual Microservices
+```bash
+# Build individual containers
+docker build --platform linux/amd64 -f docker/Dockerfile.document-processor -t doc-processor .
+docker build --platform linux/amd64 -f docker/Dockerfile.semantic-ranking -t semantic-ranking .
+docker build --platform linux/amd64 -f docker/Dockerfile.query-formulation -t query-formulation .
+docker build --platform linux/amd64 -f docker/Dockerfile.json-formatter -t json-formatter .
+```
+
+### Option 3: Full Microservices System
+```bash
+# Launch complete microservices system
 docker-compose up --build
 
 # Background deployment
@@ -307,6 +347,38 @@ docker-compose up -d --build
 # Check service health
 docker-compose ps
 docker-compose logs
+
+# Stop all services
+docker-compose down
+```
+
+### Docker Image Validation
+```bash
+# Verify the image was built successfully
+docker images | grep challenge1b
+
+# Test the container
+docker run --rm challenge1b-persona-analysis --help
+
+# Check container size
+docker images challenge1b-persona-analysis --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
+```
+
+### Production Deployment
+```bash
+# Tag for production
+docker tag challenge1b-persona-analysis:latest your-registry/challenge1b:v1.0
+
+# Push to registry
+docker push your-registry/challenge1b:v1.0
+
+# Deploy in production
+docker run -d \
+  --name challenge1b-prod \
+  --restart unless-stopped \
+  -v /data/collections:/app/input:ro \
+  -v /data/output:/app/output \
+  your-registry/challenge1b:v1.0
 ```
 
 ## 🔧 Configuration Options
@@ -358,16 +430,39 @@ All processed results are saved in `Challenge_1b/output/`:
 ### Common Issues
 ```bash
 # Dependency conflicts
-pip install -r requirements-minimal.txt  # Use minimal setup
+pip install -r requirements.txt  # Use full requirements
 
 # Memory issues
 # Reduce max_workers or batch_size in configuration
 
 # PDF processing errors
-pip install -r requirements-document-processor.txt  # Install full PDF support
+pip install PyMuPDF sentence-transformers  # Install core PDF/AI support
 
 # AWS/AI service errors
-# Check credentials and fallback to minimal mode
+# Check credentials and fallback to basic mode
+```
+
+### Docker Issues
+```bash
+# Docker build failures
+docker system prune -f  # Clean up space
+docker build --no-cache --platform linux/amd64 -t challenge1b-persona-analysis .
+
+# Platform compatibility
+docker build --platform linux/amd64 -t challenge1b-persona-analysis .  # Force AMD64
+
+# Container memory issues
+docker run --memory=8g --cpus=4 challenge1b-persona-analysis [args]
+
+# Permission issues on Windows
+# Use full paths and proper escaping
+docker run --rm -v "C:\path\to\input":/app/input:ro challenge1b-persona-analysis
+
+# Check container logs
+docker logs [container-id]
+
+# Interactive debugging
+docker run -it --entrypoint /bin/bash challenge1b-persona-analysis
 ```
 
 ### Debug Mode
@@ -375,6 +470,9 @@ pip install -r requirements-document-processor.txt  # Install full PDF support
 # Enable detailed logging
 export LOG_LEVEL=DEBUG
 python main.py [args] 2>&1 | tee debug.log
+
+# Docker debug mode
+docker run --rm -e LOG_LEVEL=DEBUG challenge1b-persona-analysis [args]
 ```
 
 ## 🎯 Success Criteria

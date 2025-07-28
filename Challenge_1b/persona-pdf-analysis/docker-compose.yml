@@ -6,12 +6,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
     container_name: persona-pdf-orchestrator
     environment:
       - AWS_REGION=us-east-1
       - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
     volumes:
-      - ./data:/app/data:ro
+      - ../Collection 1:/app/input:ro
+      - ../output:/app/output
       - ./logs:/app/logs
     ports:
       - "8000:8000"

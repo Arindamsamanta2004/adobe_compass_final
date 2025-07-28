@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "input_documents": [
+      "South of France - Cities.pdf",
+      "South of France - Cuisine.pdf",
+      "South of France - History.pdf",
+      "South of France - Restaurants and Hotels.pdf",
+      "South of France - Things to Do.pdf",
+      "South of France - Tips and Tricks.pdf",
+      "South of France - Traditions and Culture.pdf"
+    ],
+    "persona": "Travel Planner",
+    "job_to_be_done": "Plan a trip of 4 days for a group of 10 college friends.",
+    "processing_timestamp": "2025-07-28T18:22:54.213398",
+    "total_documents_processed": 0,
+    "total_chunks_extracted": 0,
+    "errors": [
+      {
+        "document": "South of France - Cities.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T18:22:54.210282"
+      },
+      {
+        "document": "South of France - Cuisine.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T18:22:54.210757"
+      },
+      {
+        "document": "South of France - History.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T18:22:54.211158"
+      },
+      {
+        "document": "South of France - Restaurants and Hotels.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T18:22:54.211637"
+      },
+      {
+        "document": "South of France - Things to Do.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T18:22:54.212055"
+      },
+      {
+        "document": "South of France - Tips and Tricks.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T18:22:54.212524"
+      },
+      {
+        "document": "South of France - Traditions and Culture.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T18:22:54.212916"
+      }
+    ],
+    "processing_time_seconds": 2.4037797451019287
+  },
+  "extracted_sections": []
+}
