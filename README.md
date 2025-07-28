@@ -9,6 +9,9 @@
 
 Transform static PDFs into intelligent, interactive experiences that understand structure, surface insights, and respond like a trusted research companion.
 
+###High-Level Architecture
+<img width="4096" height="4218" alt="image" src="https://github.com/user-attachments/assets/f745aea6-cee6-4371-9feb-f52e8bdda1f1" />
+
 ---
 
 ## 📁 Project Structure
