@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "input_documents": [
+      "Breakfast Ideas.pdf",
+      "Dinner Ideas - Mains_1.pdf",
+      "Dinner Ideas - Mains_2.pdf",
+      "Dinner Ideas - Mains_3.pdf",
+      "Dinner Ideas - Sides_1.pdf",
+      "Dinner Ideas - Sides_2.pdf",
+      "Dinner Ideas - Sides_3.pdf",
+      "Dinner Ideas - Sides_4.pdf",
+      "Lunch Ideas.pdf"
+    ],
+    "persona": "Food Contractor",
+    "job_to_be_done": "Prepare a vegetarian buffet-style dinner menu for a corporate gathering, including gluten-free items.",
+    "processing_timestamp": "2025-07-28T17:54:19.346483",
+    "total_documents_processed": 0,
+    "total_chunks_extracted": 0,
+    "errors": [
+      {
+        "document": "Breakfast Ideas.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.339691"
+      },
+      {
+        "document": "Dinner Ideas - Mains_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.340632"
+      },
+      {
+        "document": "Dinner Ideas - Mains_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.341601"
+      },
+      {
+        "document": "Dinner Ideas - Mains_3.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.342348"
+      },
+      {
+        "document": "Dinner Ideas - Sides_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.343231"
+      },
+      {
+        "document": "Dinner Ideas - Sides_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.343924"
+      },
+      {
+        "document": "Dinner Ideas - Sides_3.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.344626"
+      },
+      {
+        "document": "Dinner Ideas - Sides_4.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.345257"
+      },
+      {
+        "document": "Lunch Ideas.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:19.345905"
+      }
+    ],
+    "processing_time_seconds": 2.3949267864227295
+  },
+  "extracted_sections": []
+}

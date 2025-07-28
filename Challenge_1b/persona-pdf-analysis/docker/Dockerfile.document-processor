@@ -1,0 +1,38 @@
+# Document Processor Tool Dockerfile
+FROM python:3.9-slim
+
+# Install system dependencies for PDF processing and OCR
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libgcc-s1 \
+    poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements-document-processor.txt .
+RUN pip install --no-cache-dir -r requirements-document-processor.txt
+
+# Copy tool code
+COPY src/shared/ ./src/shared/
+COPY src/tools/document_processor.py ./src/tools/
+
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "from src.tools.document_processor import DocumentProcessorTool; print('OK')"
+
+EXPOSE 8001
+CMD ["python", "-m", "src.tools.document_processor"]

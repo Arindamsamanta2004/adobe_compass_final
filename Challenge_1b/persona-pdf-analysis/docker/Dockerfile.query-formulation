@@ -1,0 +1,24 @@
+# Query Formulation Tool Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements-query-formulation.txt .
+RUN pip install --no-cache-dir -r requirements-query-formulation.txt
+
+# Copy tool code
+COPY src/shared/ ./src/shared/
+COPY src/tools/query_formulation.py ./src/tools/
+
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "from src.tools.query_formulation import QueryFormulationTool; print('OK')"
+
+EXPOSE 8003
+CMD ["python", "-m", "src.tools.query_formulation"]

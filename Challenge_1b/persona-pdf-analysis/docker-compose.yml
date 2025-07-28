@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # Main orchestrator service
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: persona-pdf-orchestrator
+    environment:
+      - AWS_REGION=us-east-1
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data:ro
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    depends_on:
+      - document-processor
+      - semantic-ranking
+      - query-formulation
+      - json-formatter
+    networks:
+      - persona-pdf-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Document Processor Tool
+  document-processor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.document-processor
+    container_name: persona-pdf-document-processor
+    environment:
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data:ro
+    ports:
+      - "8001:8001"
+    networks:
+      - persona-pdf-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "from src.tools.document_processor import DocumentProcessorTool; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Semantic Ranking Tool
+  semantic-ranking:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.semantic-ranking
+    container_name: persona-pdf-semantic-ranking
+    environment:
+      - LOG_LEVEL=INFO
+    ports:
+      - "8002:8002"
+    networks:
+      - persona-pdf-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "from src.tools.semantic_ranking import SemanticRankingTool; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Query Formulation Tool
+  query-formulation:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.query-formulation
+    container_name: persona-pdf-query-formulation
+    environment:
+      - AWS_REGION=us-east-1
+      - LOG_LEVEL=INFO
+    ports:
+      - "8003:8003"
+    networks:
+      - persona-pdf-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "from src.tools.query_formulation import QueryFormulationTool; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # JSON Formatter Tool
+  json-formatter:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.json-formatter
+    container_name: persona-pdf-json-formatter
+    environment:
+      - LOG_LEVEL=INFO
+    ports:
+      - "8004:8004"
+    networks:
+      - persona-pdf-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "from src.tools.json_formatter import JSONOutputFormatterTool; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  persona-pdf-network:
+    driver: bridge
+
+volumes:
+  logs:
+    driver: local

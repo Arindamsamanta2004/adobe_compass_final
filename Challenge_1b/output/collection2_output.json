@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "input_documents": [
+      "Learn Acrobat - Create and Convert_1.pdf",
+      "Learn Acrobat - Create and Convert_2.pdf",
+      "Learn Acrobat - Edit_1.pdf",
+      "Learn Acrobat - Edit_2.pdf",
+      "Learn Acrobat - Export_1.pdf",
+      "Learn Acrobat - Export_2.pdf",
+      "Learn Acrobat - Fill and Sign.pdf",
+      "Learn Acrobat - Generative AI_1.pdf",
+      "Learn Acrobat - Generative AI_2.pdf",
+      "Learn Acrobat - Request e-signatures_1.pdf",
+      "Learn Acrobat - Request e-signatures_2.pdf",
+      "Learn Acrobat - Share_1.pdf",
+      "Learn Acrobat - Share_2.pdf",
+      "Test Your Acrobat Exporting Skills.pdf",
+      "The Ultimate PDF Sharing Checklist.pdf"
+    ],
+    "persona": "HR professional",
+    "job_to_be_done": "Create and manage fillable forms for onboarding and compliance.",
+    "processing_timestamp": "2025-07-28T17:54:09.283495",
+    "total_documents_processed": 0,
+    "total_chunks_extracted": 0,
+    "errors": [
+      {
+        "document": "Learn Acrobat - Create and Convert_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.275504"
+      },
+      {
+        "document": "Learn Acrobat - Create and Convert_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.276011"
+      },
+      {
+        "document": "Learn Acrobat - Edit_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.276532"
+      },
+      {
+        "document": "Learn Acrobat - Edit_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.277179"
+      },
+      {
+        "document": "Learn Acrobat - Export_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.277746"
+      },
+      {
+        "document": "Learn Acrobat - Export_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.278394"
+      },
+      {
+        "document": "Learn Acrobat - Fill and Sign.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.278911"
+      },
+      {
+        "document": "Learn Acrobat - Generative AI_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.279440"
+      },
+      {
+        "document": "Learn Acrobat - Generative AI_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.279960"
+      },
+      {
+        "document": "Learn Acrobat - Request e-signatures_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.280465"
+      },
+      {
+        "document": "Learn Acrobat - Request e-signatures_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.280978"
+      },
+      {
+        "document": "Learn Acrobat - Share_1.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.281489"
+      },
+      {
+        "document": "Learn Acrobat - Share_2.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.281957"
+      },
+      {
+        "document": "Test Your Acrobat Exporting Skills.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.282433"
+      },
+      {
+        "document": "The Ultimate PDF Sharing Checklist.pdf",
+        "error_code": "E415_UNSUPPORTED_FORMAT",
+        "reason": "Document not accessible: E415_UNSUPPORTED_FORMAT",
+        "timestamp": "2025-07-28T17:54:09.282973"
+      }
+    ],
+    "processing_time_seconds": 2.3910839557647705
+  },
+  "extracted_sections": []
+}

@@ -1,0 +1,27 @@
+# Semantic Ranking Tool Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements-semantic-ranking.txt .
+RUN pip install --no-cache-dir -r requirements-semantic-ranking.txt
+
+# Pre-download SBERT model for offline operation
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+# Copy tool code
+COPY src/shared/ ./src/shared/
+COPY src/tools/semantic_ranking.py ./src/tools/
+
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "from src.tools.semantic_ranking import SemanticRankingTool; print('OK')"
+
+EXPOSE 8002
+CMD ["python", "-m", "src.tools.semantic_ranking"]

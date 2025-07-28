@@ -1,0 +1,311 @@
+"""
+Query Formulation Tool
+
+This tool combines user persona and job_to_be_done into semantic queries
+for document analysis using Amazon Bedrock LLM (Claude 3 Sonnet).
+"""
+
+import asyncio
+import logging
+from typing import Optional
+import json
+
+from ..shared import (
+    QueryFormulationInput,
+    QueryFormulationOutput,
+    ErrorCode,
+    ValidationError,
+    ProcessingError,
+    timing_decorator,
+    safe_execute
+)
+
+logger = logging.getLogger(__name__)
+
+
+class QueryFormulationTool:
+    """
+    Tool for formulating semantic queries from persona and job descriptions.
+    Uses Amazon Bedrock with Claude 3 Sonnet for optimal query generation.
+    """
+    
+    def __init__(self, aws_region: str = "us-east-1", model_id: str = "anthropic.claude-3-sonnet-20240229-v1:0"):
+        """
+        Initialize the Query Formulation Tool.
+        
+        Args:
+            aws_region: AWS region for Bedrock
+            model_id: Claude model identifier
+        """
+        self.aws_region = aws_region
+        self.model_id = model_id
+        self._bedrock_client = None
+        
+    def _get_bedrock_client(self):
+        """Lazy initialization of Bedrock client."""
+        if self._bedrock_client is None:
+            try:
+                import boto3
+                self._bedrock_client = boto3.client(
+                    'bedrock-runtime',
+                    region_name=self.aws_region
+                )
+            except ImportError:
+                raise ProcessingError(
+                    "boto3 library not available", 
+                    ErrorCode.E503_SERVICE_UNAVAILABLE
+                )
+            except Exception as e:
+                raise ProcessingError(
+                    f"Failed to initialize Bedrock client: {str(e)}", 
+                    ErrorCode.E503_SERVICE_UNAVAILABLE
+                )
+        return self._bedrock_client
+
+    def _create_query_prompt(self, persona_role: str, task: str) -> str:
+        """
+        Create a well-engineered prompt for query formulation.
+        
+        Args:
+            persona_role: User's professional role
+            task: Specific task to be accomplished
+            
+        Returns:
+            Formatted prompt for LLM
+        """
+        return f"""You are an expert research assistant tasked with formulating the most effective semantic search query.
+
+CONTEXT:
+- User Role: {persona_role}
+- Task: {task}
+
+INSTRUCTIONS:
+1. Analyze the user's professional role and specific task
+2. Extract key concepts, entities, and domain-specific terms
+3. Consider what information would be most relevant for this role performing this task
+4. Formulate a comprehensive semantic query that captures both explicit and implicit information needs
+
+REQUIREMENTS:
+- Focus on actionable information relevant to the role
+- Include domain-specific terminology
+- Consider both primary and secondary information needs
+- Keep the query focused but comprehensive
+- Use terms that would likely appear in relevant documents
+
+OUTPUT FORMAT:
+Provide only the semantic search query as a single, well-structured sentence or phrase. Do not include explanations or additional text.
+
+SEMANTIC QUERY:"""
+
+    async def _call_bedrock_llm(self, prompt: str) -> str:
+        """
+        Call Amazon Bedrock with Claude 3 Sonnet.
+        
+        Args:
+            prompt: Formatted prompt for the LLM
+            
+        Returns:
+            Generated semantic query
+            
+        Raises:
+            ProcessingError: If LLM call fails
+        """
+        try:
+            client = self._get_bedrock_client()
+            
+            # Prepare request body for Claude 3 Sonnet
+            request_body = {
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": 200,
+                "temperature": 0.1,  # Low temperature for consistent outputs
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            }
+            
+            # Make the API call
+            response = client.invoke_model(
+                modelId=self.model_id,
+                body=json.dumps(request_body),
+                contentType="application/json",
+                accept="application/json"
+            )
+            
+            # Parse response
+            response_body = json.loads(response['body'].read())
+            
+            if 'content' not in response_body or not response_body['content']:
+                raise ProcessingError(
+                    "Empty response from LLM",
+                    ErrorCode.E503_SERVICE_UNAVAILABLE
+                )
+            
+            # Extract the text content
+            content = response_body['content'][0]['text'].strip()
+            
+            if not content:
+                raise ProcessingError(
+                    "Empty query generated by LLM",
+                    ErrorCode.E503_SERVICE_UNAVAILABLE
+                )
+            
+            return content
+            
+        except ProcessingError:
+            raise
+        except Exception as e:
+            logger.error(f"Bedrock API call failed: {str(e)}")
+            raise ProcessingError(
+                f"LLM service call failed: {str(e)}",
+                ErrorCode.E503_SERVICE_UNAVAILABLE
+            )
+
+    def _create_fallback_query(self, persona_role: str, task: str) -> str:
+        """
+        Create a fallback query when LLM is unavailable.
+        
+        Args:
+            persona_role: User's professional role
+            task: Specific task to be accomplished
+            
+        Returns:
+            Fallback semantic query
+        """
+        # Simple but effective fallback strategy
+        role_keywords = {
+            "travel planner": "travel planning destinations activities hotels restaurants",
+            "marketing manager": "marketing strategy campaigns promotion advertising",
+            "project manager": "project management timeline resources planning",
+            "data analyst": "data analysis insights metrics reporting trends",
+            "software engineer": "software development programming technical implementation",
+            "business analyst": "business analysis requirements processes optimization",
+            "content creator": "content creation writing publishing engagement",
+            "sales manager": "sales strategy leads conversion revenue growth"
+        }
+        
+        # Extract role-specific keywords
+        role_lower = persona_role.lower()
+        role_terms = ""
+        for key, terms in role_keywords.items():
+            if key in role_lower:
+                role_terms = terms
+                break
+        
+        # If no specific role found, use generic business terms
+        if not role_terms:
+            role_terms = "professional business strategy planning implementation"
+        
+        # Combine role terms with task keywords
+        task_words = task.lower().split()
+        important_words = [word for word in task_words if len(word) > 3]
+        
+        fallback_query = f"{persona_role} {task} {role_terms} {' '.join(important_words)}"
+        
+        logger.warning(f"Using fallback query generation: {fallback_query}")
+        return fallback_query
+
+    @timing_decorator
+    async def process(self, input_data: QueryFormulationInput) -> QueryFormulationOutput:
+        """
+        Process query formulation request.
+        
+        Args:
+            input_data: Query formulation input
+            
+        Returns:
+            Formatted semantic query
+        """
+        try:
+            # Validate input
+            persona_role = input_data.persona.role
+            task = input_data.job_to_be_done.task
+            
+            if not persona_role or not task:
+                raise ValidationError(
+                    "Both persona role and task must be provided",
+                    ErrorCode.E400_INVALID_INPUT
+                )
+            
+            # Create prompt
+            prompt = self._create_query_prompt(persona_role, task)
+            
+            # Try LLM call with timeout
+            try:
+                semantic_query = await asyncio.wait_for(
+                    self._call_bedrock_llm(prompt),
+                    timeout=10.0  # 10 second timeout
+                )
+                
+                logger.info(f"Successfully generated semantic query via LLM")
+                
+            except asyncio.TimeoutError:
+                logger.warning("LLM call timed out, using fallback")
+                semantic_query = self._create_fallback_query(persona_role, task)
+                
+            except ProcessingError as e:
+                if e.error_code == ErrorCode.E503_SERVICE_UNAVAILABLE:
+                    logger.warning(f"LLM unavailable ({e.message}), using fallback")
+                    semantic_query = self._create_fallback_query(persona_role, task)
+                else:
+                    raise
+            
+            # Validate output
+            if not semantic_query or len(semantic_query.strip()) < 5:
+                raise ProcessingError(
+                    "Generated query is too short or empty",
+                    ErrorCode.E500_PROCESSING_FAILED
+                )
+            
+            return QueryFormulationOutput(
+                semantic_query=semantic_query.strip(),
+                status="success"
+            )
+            
+        except (ValidationError, ProcessingError) as e:
+            logger.error(f"Query formulation failed: {e.message}")
+            return QueryFormulationOutput(
+                semantic_query="",
+                status="error",
+                error_code=e.error_code
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error in query formulation: {str(e)}")
+            return QueryFormulationOutput(
+                semantic_query="",
+                status="error",
+                error_code=ErrorCode.E500_PROCESSING_FAILED
+            )
+
+
+# Tool function for Kiro framework integration
+async def query_formulation_tool(input_data: dict) -> dict:
+    """
+    Kiro tool function for query formulation.
+    
+    Args:
+        input_data: Dictionary with persona and job_to_be_done
+        
+    Returns:
+        Dictionary with semantic_query and status
+    """
+    try:
+        # Parse input
+        query_input = QueryFormulationInput(**input_data)
+        
+        # Process
+        tool = QueryFormulationTool()
+        result = await tool.process(query_input)
+        
+        # Return as dictionary
+        return result.dict()
+        
+    except Exception as e:
+        logger.error(f"Query formulation tool error: {str(e)}")
+        return {
+            "semantic_query": "",
+            "status": "error",
+            "error_code": ErrorCode.E500_PROCESSING_FAILED
+        }
